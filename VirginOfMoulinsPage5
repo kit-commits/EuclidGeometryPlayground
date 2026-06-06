@@ -1,0 +1,190 @@
+import Foundation
+
+class RentDataManager {
+    private(set) var rentData: [String: Double] = [:]
+
+    func loadRentData() {
+        // Load rent data from a source (e.g., API, database)
+        // For demonstration, we'll use hardcoded data
+        rentData = [
+            "averageRent": 2800,
+            "squareFootageRent": 550,
+            "commute": 30,
+            "size": 550,
+            "distance": 0.25,
+            "walkability": 85,
+            "safety": 90,
+            "amenities": 80,
+            "wifiReliability": 92,
+            "noiseInsulation": 88
+        ]
+    }
+
+    // IT-focused defaults for apartment scoring profiles.
+    func defaultITIdealProfile() -> [String: Double] {
+        [
+            "averageRent": 2800,
+            "commute": 35,
+            "size": 550,
+            "distance": 0.30,
+            "walkability": 80,
+            "safety": 85,
+            "amenities": 75,
+            "wifiReliability": 95,
+            "noiseInsulation": 90
+        ]
+    }
+
+    // Higher values mean more importance in the weighted distance.
+    func defaultITWeights() -> [String: Double] {
+        [
+            "averageRent": 0.24,
+            "commute": 0.18,
+            "size": 0.12,
+            "distance": 0.08,
+            "walkability": 0.07,
+            "safety": 0.09,
+            "amenities": 0.06,
+            "wifiReliability": 0.10,
+            "noiseInsulation": 0.06
+        ]
+    }
+
+    // true means higher-is-better, false means lower-is-better.
+    func defaultITFeatureDirections() -> [String: Bool] {
+        [
+            "averageRent": false,
+            "commute": false,
+            "size": true,
+            "distance": false,
+            "walkability": true,
+            "safety": true,
+            "amenities": true,
+            "wifiReliability": true,
+            "noiseInsulation": true
+        ]
+    }
+
+    // Builds min/max bounds per feature from apartments plus ideal target.
+    func featureBounds(
+        apartments: [[String: Double]],
+        ideal: [String: Double]
+    ) -> [String: (min: Double, max: Double)] {
+        let allKeys = Set(ideal.keys).union(apartments.flatMap { $0.keys })
+        var bounds: [String: (min: Double, max: Double)] = [:]
+
+        for key in allKeys {
+            var values = apartments.compactMap { $0[key] }
+            if let idealValue = ideal[key] {
+                values.append(idealValue)
+            }
+
+            guard let minValue = values.min(), let maxValue = values.max() else {
+                bounds[key] = (0, 1)
+                continue
+            }
+
+            bounds[key] = (minValue, maxValue)
+        }
+
+        return bounds
+    }
+
+    // Min-max normalization. Constant dimensions contribute 0 distance.
+    func normalize(
+        value: Double,
+        min minValue: Double,
+        max maxValue: Double
+    ) -> Double {
+        let range = maxValue - minValue
+        guard range > 0 else { return 0 }
+        return (value - minValue) / range
+    }
+
+    // Converts features into a shared direction for scoring.
+    // By default, lower is better. For higher-is-better features, normalized value is inverted.
+    func orientedNormalizedValue(
+        value: Double,
+        min minValue: Double,
+        max maxValue: Double,
+        higherIsBetter: Bool
+    ) -> Double {
+        let normalizedValue = normalize(value: value, min: minValue, max: maxValue)
+        return higherIsBetter ? (1 - normalizedValue) : normalizedValue
+    }
+
+    // Normalizes non-negative weights to sum to 1.
+    // If all provided weights are zero or negative, returns empty and callers use defaults.
+    func normalizedWeights(
+        _ weights: [String: Double]
+    ) -> [String: Double] {
+        let clamped = weights.mapValues { max(0, $0) }
+        let total = clamped.values.reduce(0, +)
+        guard total > 0 else { return [:] }
+        return clamped.mapValues { $0 / total }
+    }
+
+    // Scores one apartment with normalized weighted Euclidean distance.
+    // Lower score means closer to the ideal point.
+    func weightedEuclideanScoreNormalized(
+        apartment: [String: Double],
+        ideal: [String: Double],
+        weights: [String: Double],
+        bounds: [String: (min: Double, max: Double)],
+        featureDirections: [String: Bool]
+    ) -> Double {
+        let allKeys = Set(ideal.keys).union(apartment.keys)
+        var sum: Double = 0
+
+        for key in allKeys {
+            let bound = bounds[key] ?? (min: 0, max: 1)
+            let x = apartment[key] ?? 0
+            let t = ideal[key] ?? 0
+            let w = max(0, weights[key] ?? 1)
+            let higherIsBetter = featureDirections[key] ?? false
+
+            let xNorm = orientedNormalizedValue(
+                value: x,
+                min: bound.min,
+                max: bound.max,
+                higherIsBetter: higherIsBetter
+            )
+            let tNorm = orientedNormalizedValue(
+                value: t,
+                min: bound.min,
+                max: bound.max,
+                higherIsBetter: higherIsBetter
+            )
+            let diff = xNorm - tNorm
+            sum += w * diff * diff
+        }
+
+        return sqrt(sum)
+    }
+
+    // Ranks apartments by normalized weighted distance.
+    func rankApartmentsNormalized(
+        apartments: [[String: Double]],
+        ideal: [String: Double],
+        weights: [String: Double],
+        featureDirections: [String: Bool] = [:]
+    ) -> [(apartment: [String: Double], score: Double)] {
+        let bounds = featureBounds(apartments: apartments, ideal: ideal)
+        let unitWeights = normalizedWeights(weights)
+
+        apartments
+            .map { apartment in
+                (
+                    apartment: apartment,
+                    score: weightedEuclideanScoreNormalized(
+                        apartment: apartment,
+                        ideal: ideal,
+                        weights: unitWeights,
+                        bounds: bounds,
+                        featureDirections: featureDirections
+                    )
+                )
+            }
+            .sorted { $0.score < $1.score }
+    }
+}
