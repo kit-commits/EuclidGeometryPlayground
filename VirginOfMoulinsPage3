@@ -1,0 +1,212 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage3: View {
+    @State private var radius: CGFloat = 120 // slider-controlled size
+    private let phi = (1.0 + sqrt(5.0)) / 2.0 // golden ratio
+
+    var body: some View {
+        VStack(spacing: 20) {
+
+            GeometryReader { geo in
+                let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
+                let points = pentagonPoints(center: center, radius: radius)
+
+                Canvas { context, size in
+
+                    // Draw the pentagon edges
+
+                    var pentagon = Path()
+                    pentagon.move(to: points[0])
+                    for i in 1..<5 {
+                        pentagon.addLine(to: points[i])
+                    }
+                    pentagon.closeSubpath()
+
+                    context.stroke(
+                        pentagon, 
+                        with: .color(.blue), 
+                        lineWidth: 3
+                    )
+
+                    // Draw one diagonal (0 -> 2) to illustrate the golden ratio 
+
+                    var diagonal = Path()
+                    diagonal.move(to: points[0])
+                    diagonal.addLine(to: points[2])
+
+                    context.stroke(
+                        diagonal, 
+                        with: .color(.red), 
+                        lineWidth: 2
+                    )
+
+                }
+
+            }
+            .frame(height: 300)
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Radius: \(Int(radius))")
+                Slider(value: $radius, in: 60...160)
+
+                let ratio = diagonalToSideRatio(radius: radius)
+                Text(String(format: "d / s = %.5f", ratio))
+                Text(String(format: "Golden Ratio (φ) ≈ %.5f", phi))
+                Text(String(format: "Difference = %.8f", abs(ratio - phi)))
+                    .foregroundColor(abs(ratio - phi) < 0.0001 ? .green : .red)
+            }
+            .padding(.horizontal)
+        }
+        .padding()
+    }
+
+    // Regular pentagon verticles from a circle
+
+    private func pentagonPoints(center: CGPoint, radius: CGFloat) -> [CGPoint] {
+        (0..<5).map { i in
+            let angle = -Double.pi / 2 + Double(i) * (2.0 * Double.pi / 5.0)
+            return CGPoint(
+                x: center.x + radius * CGFloat(cos(angle)),
+                y: center.y + radius * CGFloat(sin(angle))
+            )
+        }
+    }
+
+    private func diagonalToSideRatio(radius: CGFloat) -> Double {
+
+        let r = Double(radius)
+        let side = 2.0 * r * sin(Double.pi / 5.0)
+        let diagonal = 2.0 * r * sin(2.0 * Double.pi / 5.0)
+        return diagonal / side
+
+        // The side length of a regular pentagon can be calculated from the radius (circumradius)
+        //let sideLength = 2 * radius * sin(.pi / 5)
+        // The diagonal length can be calculated using the golden ratio
+        //let diagonalLength = sideLength * phi
+        //return diagonalLength / sideLength
+    }
+}
+
+
+    // Calculate the ratio of diagonal to side for a regular pentagon
+    /* 
+                Text("Pentagon/Diagonal Explorer")
+
+                    path.move(to: points[0])
+                    for i in 1..<5 {
+                        path.addLine(to: points[i])
+                    }
+
+                    path.closeSubpath()
+                    context.stroke(
+                        path, with: .color(.blue), 
+                        lineWidth: 2)
+                
+                let R = radius
+                let vertices = (0..<5).map { i in
+                    CGPoint(x: center.x + R * cos(2 * .pi * CGFloat(i) / 5),
+                            y: center.y + R * sin(2 * .pi * CGFloat(i) / 5))
+                }
+
+                Path { path in
+                    path.move(to: vertices[0])
+                    for i in 1..<5 {
+                        path.addLine(to: vertices[i])
+                    }
+                    path.closeSubpath()
+                }
+                .stroke(Color.blue, lineWidth: 2)
+
+                // Draw diagonals
+                ForEach(0..<5) { i in
+                    Path { path in
+                        path.move(to: vertices[i])
+                        path.addLine(to: vertices[(i + 2) % 5]) // connect to the vertex two steps away
+                    }
+                    .stroke(Color.red, lineWidth: 1)
+                }
+            }
+
+
+        }
+
+
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Pentagon/Diagonal Explorer")
+                .font(.title)
+                .padding(.bottom)
+
+            Text("A regular pentagon hides the golden ratio inside its diagonals.")
+            Text("Diagonal divides the side into two segments, one of which is the golden ratio of the other.")
+            Text("The diagonal of the pentagon is the side length multiplied by the golden ratio.")
+
+            let sideLength
+    
+    
+    
+    : Double = 100.0
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+
+
+
+
+
+
+
+
+
+
+let phi = (1+sqrt(5))/2
+
+let diagonal = sideLength * phi
+let diagonal2 = sideLength * phi 
+let diagonal3 = sideLength * phi 
+let diagonal4 = sideLength * phi 
+let diagonal5 = sideLength * phi 
+
+Text("Pentagon/Diagonal Explorer")
+
+Text("A regular pentagon hides the golden ratio inside its diagonals.")
+
+Text("Diagonal divides the side into two segments, one of which is the golden ratio of the other.")
+
+Text("The diagonal of the pentagon is the side length multiplied by the golden ratio.")
+
+Diagonal = sideLength * phi
+
+Side = diagonal / phi
+
+Side = 100
+
+Diagonal = 161.80339887498948
+
+Ratio = 1.6180339887498948
+
+Text("The diagonal is approximately 1.618 times the length of the side.")
+
+Text("This relationship holds true for all regular pentagons, regardless of their size.")
+
+Text("The golden ratio is a fundamental mathematical constant that appears in various aspects of art, architecture, and nature.")
+
+goldenRatio = (1 + sqrt(5)) / 2
+
+d/s = goldenRatio
+
+R = Rmin + t * (Rmax - Rmin)
+
+Compute the 5 vertices from a circle. 
+
+FiveVertices = [ (R * cos(2 * pi * i / 5), R * sin(2 * pi * i / 5)) for i in range(5) ]
+
+Vertex = xi = cx + R * cos(2 * pi * i / 5)
+         yi = cy + R * sin(2 * pi * i / 5)
+
+         s = |P1*P2|
+         d = |P0*P2|
+
+Text("The vertices of the pentagon can be calculated using the radius and the angle between them.")
+Text("The distance between the vertices can be calculated using the distance formula, which confirms the relationship between the side and the diagonal.")
+
+*/
