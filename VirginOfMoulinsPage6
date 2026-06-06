@@ -1,0 +1,80 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage6: View {
+	private let storyBeats: [String] = [
+		"Urgency appears: a broken microwave must be replaced immediately.",
+		"A real-world constraint appears: the new unit must fit a custom cabinet frame.",
+		"Action becomes specific: dimensions are measured before going to the store.",
+		"A scarce outcome raises stakes: the last matching unit is found and purchased.",
+		"Execution proves value: remove old unit, install new unit, reassemble frame, verify it works."
+	]
+
+	private let productMapping: [(useCase: String, storyTranslation: String)] = [
+		(
+			useCase: "Customer has store credit and needs a replacement appliance.",
+			storyTranslation: "A person under time pressure must solve a constrained purchase without making an expensive fit mistake."
+		),
+		(
+			useCase: "System should present matching products.",
+			storyTranslation: "Dimensions are checked first, so only products that physically fit are considered."
+		),
+		(
+			useCase: "Customer completes purchase and replacement.",
+			storyTranslation: "The replacement is installed at home and validated by a successful test run."
+		)
+	]
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				Text("Page 6: It Started With a Microwave")
+					.font(.title2.weight(.semibold))
+
+				Text("When Zeek was building use cases for in-store credit, the challenge was turning dry process steps into a story with urgency, constraints, and proof of value.")
+					.foregroundStyle(.secondary)
+
+				Divider()
+
+				Text("Narrative Arc")
+					.font(.headline)
+
+				ForEach(storyBeats.indices, id: \.self) { index in
+					HStack(alignment: .top, spacing: 8) {
+						Text("\(index + 1).")
+							.fontWeight(.semibold)
+						Text(storyBeats[index])
+					}
+				}
+
+				Divider()
+
+				Text("From Use Case to Story")
+					.font(.headline)
+
+				ForEach(productMapping.indices, id: \.self) { index in
+					let item = productMapping[index]
+					VStack(alignment: .leading, spacing: 6) {
+						Text("Use case: \(item.useCase)")
+							.fontWeight(.medium)
+						Text("Story: \(item.storyTranslation)")
+							.foregroundStyle(.secondary)
+					}
+					.padding(10)
+					.background(Color(.secondarySystemBackground))
+					.clipShape(RoundedRectangle(cornerRadius: 10))
+				}
+
+				Divider()
+
+				Text("Why This Works")
+					.font(.headline)
+				Text("The microwave example works because it keeps the business logic intact while adding human stakes: urgency, physical constraints, scarcity, and completion. That makes the value proposition memorable to customers, executives, and recruiters.")
+			}
+			.padding()
+		}
+	}
+}
+
+#Preview {
+	VirginOfMoulinsPage6()
+}
