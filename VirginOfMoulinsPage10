@@ -1,0 +1,147 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage10: View {
+	private struct MarketProfile {
+		let name: String
+		let rentPercent: Double
+		let electricPercent: Double
+		let internetPercent: Double
+		let transitPercent: Double
+		let groceriesPercent: Double
+		let emergencyPercent: Double
+	}
+
+	private let markets: [MarketProfile] = [
+		MarketProfile(
+			name: "NYC",
+			rentPercent: 0.38,
+			electricPercent: 0.028,
+			internetPercent: 0.016,
+			transitPercent: 0.05,
+			groceriesPercent: 0.10,
+			emergencyPercent: 0.11
+		),
+		MarketProfile(
+			name: "San Francisco",
+			rentPercent: 0.40,
+			electricPercent: 0.023,
+			internetPercent: 0.016,
+			transitPercent: 0.035,
+			groceriesPercent: 0.10,
+			emergencyPercent: 0.10
+		),
+		MarketProfile(
+			name: "Austin",
+			rentPercent: 0.31,
+			electricPercent: 0.032,
+			internetPercent: 0.015,
+			transitPercent: 0.025,
+			groceriesPercent: 0.09,
+			emergencyPercent: 0.13
+		)
+	]
+
+	@State private var monthlyNetIncome: Double = 8000
+	@State private var selectedMarketIndex: Int = 0
+
+	private var market: MarketProfile {
+		markets[selectedMarketIndex]
+	}
+
+	private var rent: Double { monthlyNetIncome * market.rentPercent }
+	private var electric: Double { monthlyNetIncome * market.electricPercent }
+	private var internet: Double { monthlyNetIncome * market.internetPercent }
+	private var transit: Double { monthlyNetIncome * market.transitPercent }
+	private var groceries: Double { monthlyNetIncome * market.groceriesPercent }
+	private var emergency: Double { monthlyNetIncome * market.emergencyPercent }
+
+	private var phone: Double { monthlyNetIncome * 0.015 }
+	private var rentersInsurance: Double { monthlyNetIncome * 0.006 }
+	private var softwareCloud: Double { monthlyNetIncome * 0.02 }
+
+	private var plannedTotal: Double {
+		rent
+			+ electric
+			+ internet
+			+ transit
+			+ groceries
+			+ emergency
+			+ phone
+			+ rentersInsurance
+			+ softwareCloud
+	}
+
+	private var remaining: Double {
+		monthlyNetIncome - plannedTotal
+	}
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				Text("Page 10: Market-Adjusted Budget Mode")
+					.font(.title2.weight(.semibold))
+
+				Text("Use a market preset to tune an IT apartment budget quickly. Percentages are not absolute rules, but practical starting points for planning.")
+					.foregroundStyle(.secondary)
+
+				Divider()
+
+				VStack(alignment: .leading, spacing: 10) {
+					Text(String(format: "Monthly net income: $%.0f", monthlyNetIncome))
+					Slider(value: $monthlyNetIncome, in: 3500...18000, step: 100)
+
+					Picker("Market", selection: $selectedMarketIndex) {
+						ForEach(markets.indices, id: \.self) { index in
+							Text(markets[index].name).tag(index)
+						}
+					}
+					.pickerStyle(.segmented)
+				}
+
+				Divider()
+
+				Text("\(market.name) Allocation")
+					.font(.headline)
+
+				row("Rent", rent, market.rentPercent)
+				row("Electric", electric, market.electricPercent)
+				row("Internet", internet, market.internetPercent)
+				row("Transit", transit, market.transitPercent)
+				row("Groceries", groceries, market.groceriesPercent)
+				row("Emergency fund", emergency, market.emergencyPercent)
+				row("Phone", phone, 0.015)
+				row("Renter's insurance", rentersInsurance, 0.006)
+				row("Software and cloud", softwareCloud, 0.02)
+
+				Divider()
+
+				VStack(alignment: .leading, spacing: 8) {
+					Text(String(format: "Planned total: $%.0f", plannedTotal))
+						.font(.headline)
+					Text(String(format: "Remaining: $%.0f", remaining))
+						.foregroundStyle(remaining >= 0 ? .green : .red)
+					Text("Tip: if remaining falls below 10%, reduce rent first before cutting reliability essentials such as internet stability or emergency savings.")
+						.foregroundStyle(.secondary)
+				}
+			}
+			.padding()
+		}
+	}
+
+	@ViewBuilder
+	private func row(_ title: String, _ amount: Double, _ pct: Double) -> some View {
+		HStack {
+			Text(title)
+			Spacer()
+			Text(String(format: "$%.0f (%.1f%%)", amount, pct * 100))
+				.monospacedDigit()
+		}
+		.padding(10)
+		.background(Color(.secondarySystemBackground))
+		.clipShape(RoundedRectangle(cornerRadius: 10))
+	}
+}
+
+#Preview {
+	VirginOfMoulinsPage10()
+}
