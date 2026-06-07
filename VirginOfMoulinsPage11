@@ -1,0 +1,147 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage11: View {
+	private struct MarketProfile: Identifiable {
+		let id = UUID()
+		let name: String
+		let rentPercent: Double
+		let electricPercent: Double
+		let internetPercent: Double
+		let transitPercent: Double
+		let groceriesPercent: Double
+		let emergencyPercent: Double
+	}
+
+	private let markets: [MarketProfile] = [
+		MarketProfile(
+			name: "NYC",
+			rentPercent: 0.38,
+			electricPercent: 0.028,
+			internetPercent: 0.016,
+			transitPercent: 0.05,
+			groceriesPercent: 0.10,
+			emergencyPercent: 0.11
+		),
+		MarketProfile(
+			name: "San Francisco",
+			rentPercent: 0.40,
+			electricPercent: 0.023,
+			internetPercent: 0.016,
+			transitPercent: 0.035,
+			groceriesPercent: 0.10,
+			emergencyPercent: 0.10
+		),
+		MarketProfile(
+			name: "Austin",
+			rentPercent: 0.31,
+			electricPercent: 0.032,
+			internetPercent: 0.015,
+			transitPercent: 0.025,
+			groceriesPercent: 0.09,
+			emergencyPercent: 0.13
+		)
+	]
+
+	@State private var monthlyNetIncome: Double = 8000
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				Text("Page 11: Market Comparison")
+					.font(.title2.weight(.semibold))
+
+				Text("Compare all markets side by side using the same net income. This helps you see where budget pressure comes from before choosing a location.")
+					.foregroundStyle(.secondary)
+
+				VStack(alignment: .leading, spacing: 8) {
+					Text(String(format: "Monthly net income: $%.0f", monthlyNetIncome))
+					Slider(value: $monthlyNetIncome, in: 3500...18000, step: 100)
+				}
+
+				Divider()
+
+				ForEach(markets) { market in
+					let budget = computedBudget(for: market, income: monthlyNetIncome)
+
+					VStack(alignment: .leading, spacing: 8) {
+						Text(market.name)
+							.font(.headline)
+
+						metricRow("Rent", budget.rent)
+						metricRow("Utilities (electric + internet + phone)", budget.utilities)
+						metricRow("Transit", budget.transit)
+						metricRow("Groceries", budget.groceries)
+						metricRow("Emergency fund", budget.emergency)
+						metricRow("Insurance + software", budget.fixedTools)
+
+						Divider()
+
+						metricRow("Planned total", budget.total, isEmphasized: true)
+						metricRow(
+							"Remaining",
+							budget.remaining,
+							foreground: budget.remaining >= 0 ? .green : .red,
+							isEmphasized: true
+						)
+					}
+					.padding(12)
+					.background(Color(.secondarySystemBackground))
+					.clipShape(RoundedRectangle(cornerRadius: 12))
+				}
+
+				Text("Use the remaining amount as your resilience signal: it should comfortably absorb surprise expenses without sacrificing core work reliability.")
+					.font(.subheadline)
+					.foregroundStyle(.secondary)
+			}
+			.padding()
+		}
+	}
+
+	private func computedBudget(for market: MarketProfile, income: Double) -> (
+		rent: Double,
+		utilities: Double,
+		transit: Double,
+		groceries: Double,
+		emergency: Double,
+		fixedTools: Double,
+		total: Double,
+		remaining: Double
+	) {
+		let rent = income * market.rentPercent
+		let electric = income * market.electricPercent
+		let internet = income * market.internetPercent
+		let phone = income * 0.015
+		let utilities = electric + internet + phone
+		let transit = income * market.transitPercent
+		let groceries = income * market.groceriesPercent
+		let emergency = income * market.emergencyPercent
+		let fixedTools = income * (0.006 + 0.02)
+
+		let total = rent + utilities + transit + groceries + emergency + fixedTools
+		let remaining = income - total
+
+		return (rent, utilities, transit, groceries, emergency, fixedTools, total, remaining)
+	}
+
+	@ViewBuilder
+	private func metricRow(
+		_ title: String,
+		_ value: Double,
+		foreground: Color = .primary,
+		isEmphasized: Bool = false
+	) -> some View {
+		HStack {
+			Text(title)
+				.fontWeight(isEmphasized ? .semibold : .regular)
+			Spacer()
+			Text(String(format: "$%.0f", value))
+				.foregroundStyle(foreground)
+				.fontWeight(isEmphasized ? .semibold : .regular)
+				.monospacedDigit()
+		}
+	}
+}
+
+#Preview {
+	VirginOfMoulinsPage11()
+}
