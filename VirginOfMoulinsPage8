@@ -1,0 +1,108 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage8: View {
+	private let geoFactors: [(title: String, implication: String)] = [
+		(
+			title: "1) How good is good enough?",
+			implication: "Quality thresholds vary by market; tune defaults and release criteria per region."
+		),
+		(
+			title: "2) Social and social+ behavior",
+			implication: "Sharing norms differ; localize collaboration features, social proof, and moderation settings."
+		),
+		(
+			title: "3) Gig and sharing economy maturity",
+			implication: "Adoption depends on local labor patterns, platform familiarity, and payment infrastructure."
+		),
+		(
+			title: "4) Trust in government and brands",
+			implication: "Trust levels shape onboarding friction, consent messaging, and verification requirements."
+		),
+		(
+			title: "5) Safety and perception of safety",
+			implication: "Safety cues must be explicit, measurable, and visible in product flows."
+		),
+		(
+			title: "6) Inclusion",
+			implication: "Language, accessibility, and identity representation must reflect local populations."
+		),
+		(
+			title: "7) Population scale (small vs large)",
+			implication: "Distribution, support, and growth loops differ in dense versus small markets."
+		),
+		(
+			title: "8) Wealth (GDP per capita)",
+			implication: "Pricing, bundles, and value messaging should align with local purchasing power."
+		)
+	]
+
+	private let responsibleChecklist: [String] = [
+		"State what geo data is used and why in plain language.",
+		"Collect only the minimum location signal needed for the feature.",
+		"Ask consent in context before using sensitive location data.",
+		"Provide a no-surprises mode: easy opt-out and clear controls.",
+		"Stress-test outputs across regions before broad launch.",
+		"Localize risk policies, not just UI text."
+	]
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				Text("Page 8: Geo-Based Behavior and GTM")
+					.font(.title2.weight(.semibold))
+
+				Text("Why care about geo behavior? Because global go-to-market fails when product assumptions ignore culture, trust, and local constraints. Geography is a product input, not just a sales territory map.")
+					.foregroundStyle(.secondary)
+
+				Divider()
+
+				Text("Core Principle")
+					.font(.headline)
+
+				Text("A cultural gap should shape both GTM and product design. The same feature can feel delightful in one region and risky or irrelevant in another.")
+
+				Divider()
+
+				Text("Geographic Differences to Model")
+					.font(.headline)
+
+				ForEach(geoFactors.indices, id: \.self) { index in
+					let factor = geoFactors[index]
+					VStack(alignment: .leading, spacing: 4) {
+						Text(factor.title)
+							.fontWeight(.semibold)
+						Text(factor.implication)
+							.foregroundStyle(.secondary)
+					}
+					.padding(10)
+					.background(Color(.secondarySystemBackground))
+					.clipShape(RoundedRectangle(cornerRadius: 10))
+				}
+
+				Divider()
+
+				Text("Team-Safe AI Checklist")
+					.font(.headline)
+
+				ForEach(responsibleChecklist.indices, id: \.self) { index in
+					HStack(alignment: .top, spacing: 8) {
+						Text("\(index + 1).")
+							.fontWeight(.semibold)
+						Text(responsibleChecklist[index])
+					}
+				}
+
+				Divider()
+
+				Text("GTM Translation")
+					.font(.headline)
+				Text("Build one global product architecture, but tune trust, safety, pricing, and social behaviors per market cluster. That is how AI helps teams move faster without creating avoidable legal or reputational risk.")
+			}
+			.padding()
+		}
+	}
+}
+
+#Preview {
+	VirginOfMoulinsPage8()
+}
