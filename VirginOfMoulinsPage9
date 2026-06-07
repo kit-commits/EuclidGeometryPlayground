@@ -1,0 +1,130 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage9: View {
+	@State private var monthlyNetIncome: Double = 7500
+	@State private var rentPercent: Double = 0.32
+
+	private var rentBudget: Double {
+		monthlyNetIncome * rentPercent
+	}
+
+	private var electricBudget: Double {
+		monthlyNetIncome * 0.025
+	}
+
+	private var internetBudget: Double {
+		monthlyNetIncome * 0.015
+	}
+
+	private var phoneBudget: Double {
+		monthlyNetIncome * 0.015
+	}
+
+	private var rentersInsuranceBudget: Double {
+		monthlyNetIncome * 0.006
+	}
+
+	private var softwareCloudBudget: Double {
+		monthlyNetIncome * 0.02
+	}
+
+	private var transitBudget: Double {
+		monthlyNetIncome * 0.04
+	}
+
+	private var groceriesBudget: Double {
+		monthlyNetIncome * 0.09
+	}
+
+	private var emergencyFundBudget: Double {
+		monthlyNetIncome * 0.12
+	}
+
+	private var totalPlanned: Double {
+		rentBudget
+			+ electricBudget
+			+ internetBudget
+			+ phoneBudget
+			+ rentersInsuranceBudget
+			+ softwareCloudBudget
+			+ transitBudget
+			+ groceriesBudget
+			+ emergencyFundBudget
+	}
+
+	private var remaining: Double {
+		monthlyNetIncome - totalPlanned
+	}
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				Text("Page 9: IT Apartment Utilities and Budget Guide")
+					.font(.title2.weight(.semibold))
+
+				Text("A friendly baseline for remote and hybrid technology workers. Adjust your net income and rent target, then use the ranges below to keep utilities stable and stress low.")
+					.foregroundStyle(.secondary)
+
+				Divider()
+
+				VStack(alignment: .leading, spacing: 10) {
+					Text(String(format: "Monthly net income: $%.0f", monthlyNetIncome))
+					Slider(value: $monthlyNetIncome, in: 3500...15000, step: 100)
+
+					Text(String(format: "Rent target: %.0f%%", rentPercent * 100))
+					Slider(value: $rentPercent, in: 0.25...0.40, step: 0.01)
+				}
+
+				Divider()
+
+				Text("Recommended Monthly Allocation")
+					.font(.headline)
+
+				budgetRow("Rent", amount: rentBudget, hint: "25-40% depending on market")
+				budgetRow("Electric", amount: electricBudget, hint: "Aim for efficient climate control")
+				budgetRow("Internet", amount: internetBudget, hint: "Prioritize uptime and upload speed")
+				budgetRow("Phone", amount: phoneBudget, hint: "Reliable hotspot backup")
+				budgetRow("Renter's insurance", amount: rentersInsuranceBudget, hint: "Protect laptop and equipment")
+				budgetRow("Software and cloud tools", amount: softwareCloudBudget, hint: "IDE, storage, subscriptions")
+				budgetRow("Transit", amount: transitBudget, hint: "Office days and client meetings")
+				budgetRow("Groceries", amount: groceriesBudget, hint: "Sustainable weekly baseline")
+				budgetRow("Emergency fund", amount: emergencyFundBudget, hint: "3-6 month runway target")
+
+				Divider()
+
+				VStack(alignment: .leading, spacing: 8) {
+					Text(String(format: "Planned total: $%.0f", totalPlanned))
+						.font(.headline)
+					Text(String(format: "Remaining buffer: $%.0f", remaining))
+						.foregroundStyle(remaining >= 0 ? .green : .red)
+					Text("Professional rule of thumb: keep enough monthly buffer for surprise repairs, temporary rate hikes, and one-off work equipment replacement.")
+						.foregroundStyle(.secondary)
+				}
+			}
+			.padding()
+		}
+	}
+
+	@ViewBuilder
+	private func budgetRow(_ title: String, amount: Double, hint: String) -> some View {
+		VStack(alignment: .leading, spacing: 4) {
+			HStack {
+				Text(title)
+					.fontWeight(.medium)
+				Spacer()
+				Text(String(format: "$%.0f", amount))
+					.monospacedDigit()
+			}
+			Text(hint)
+				.font(.subheadline)
+				.foregroundStyle(.secondary)
+		}
+		.padding(10)
+		.background(Color(.secondarySystemBackground))
+		.clipShape(RoundedRectangle(cornerRadius: 10))
+	}
+}
+
+#Preview {
+	VirginOfMoulinsPage9()
+}
