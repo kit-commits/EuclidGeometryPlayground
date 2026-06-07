@@ -1,0 +1,64 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage12: View {
+	private let highlights: [String] = [
+		"Holmdel was built on hundreds of acres assembled from three farms purchased in 1929.",
+		"Researchers worked near Sandy Hook and the Atlantic while testing large antennas and microwave transmission systems.",
+		"The site supported early research that contributed to silicon and germanium progress in the 1940s.",
+		"Families gathered there on weekends, and children explored old structures across the property.",
+		"Many researchers later remembered Holmdel with deep emotion as a vanished innovation outpost."
+	]
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				Text("Page 12: Holmdel, A World Unto Itself")
+					.font(.title2.weight(.semibold))
+
+				Text("Holmdel represented a rare blend of isolation, scientific ambition, and community life. The setting itself shaped how people worked, experimented, and remembered their careers.")
+					.foregroundStyle(.secondary)
+
+				Divider()
+
+				Text("The Setting")
+					.font(.headline)
+				Text("You left the main road and entered a half-mile stretch bordered by open, carefully maintained fields. At the center stood a modest one-story clapboard laboratory with three wings extending from a peaked core.")
+
+				Divider()
+
+				Text("What Happened There")
+					.font(.headline)
+				Text("Holmdel functioned as Bell Labs' central site for large-antenna experiments and emerging wireless microwave technologies. It was also part of the era's early materials research environment connected to silicon and germanium advances.")
+
+				Divider()
+
+				Text("Human Life Around the Lab")
+					.font(.headline)
+				Text("The grounds were not only technical infrastructure. Families gathered for picnics, children played in open fields, and older buildings on the property gave the site a layered historical atmosphere.")
+
+				Divider()
+
+				Text("Key Highlights")
+					.font(.headline)
+				ForEach(highlights.indices, id: \.self) { index in
+					HStack(alignment: .top, spacing: 8) {
+						Text("\(index + 1).")
+							.fontWeight(.semibold)
+						Text(highlights[index])
+					}
+				}
+
+				Divider()
+
+				Text("Why It Matters")
+					.font(.headline)
+				Text("Holmdel shows that breakthrough engineering often emerges from both technical rigor and cultural environment. The memory of place can be as durable as the inventions that came from it.")
+			}
+			.padding()
+		}
+	}
+}
+
+#Preview {
+	VirginOfMoulinsPage12()
+}
