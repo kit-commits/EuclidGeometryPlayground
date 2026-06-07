@@ -1,0 +1,66 @@
+import SwiftUI
+
+struct VirginOfMoulinsPage7: View {
+	private let privacySignals: [String] = [
+		"We only display locations when the user provides an address during the demo.",
+		"The map uses licensed, aggregate geospatial layers, not personal surveillance.",
+		"The purpose is product validation: coverage, accuracy, and usability.",
+		"No investor profile is preloaded or singled out without consent in-session."
+	]
+
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				Text("Page 7: The Map Moment")
+					.font(.title2.weight(.semibold))
+
+				Text("A strong investor demo combines emotional impact with responsible language. The goal is to show product power while making privacy expectations explicit and comfortable.")
+					.foregroundStyle(.secondary)
+
+				Divider()
+
+				Text("Investor-Friendly Version")
+					.font(.headline)
+
+				Text("\"Let us test a real address live so you can see how the product behaves in practice. If you want, we can try your home address or any address you choose.\"")
+
+				Text("\"Great, let's type it in together.\"")
+
+				Text("\"There it is on the map. What matters here is that the system resolves the address quickly and accurately using our licensed satellite and map data stack.\"")
+
+				Text("\"This is exactly the reliability customers pay for: confidence in coverage and instant spatial context.\"")
+
+				Divider()
+
+				Text("Why Investors Respond")
+					.font(.headline)
+
+				Text("The emotional shift happens when abstract capability becomes personally visible. Seeing a familiar place appear instantly turns a technical claim into perceived market value.")
+
+				Divider()
+
+				Text("Privacy Signals to Say Out Loud")
+					.font(.headline)
+
+				ForEach(privacySignals.indices, id: \.self) { index in
+					HStack(alignment: .top, spacing: 8) {
+						Text("\(index + 1).")
+							.fontWeight(.semibold)
+						Text(privacySignals[index])
+					}
+				}
+
+				Divider()
+
+				Text("One-Line Framing")
+					.font(.headline)
+				Text("We demonstrate geospatial intelligence with user-provided inputs, transparent data sources, and clear boundaries so performance feels magical and trust remains intact.")
+			}
+			.padding()
+		}
+	}
+}
+
+#Preview {
+	VirginOfMoulinsPage7()
+}
